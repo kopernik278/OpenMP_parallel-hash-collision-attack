@@ -171,9 +171,7 @@ After `scripts/solve_all.slurm` finishes and you `scp` `solved/` back:
 2. Fill the placeholder table in `report/report.md` with the real
    `results/scaling_<jobid>.csv` numbers, then re-render:
    `pandoc report/report.md -o report/report.pdf`.
-3. Fill in your full name at the top of `report/report.md` (currently a
-   `[Your Name]` placeholder — only the student number is filled in).
-4. Re-run `bash scripts/package_submission.sh` to produce the final,
+3. Re-run `bash scripts/package_submission.sh` to produce the final,
    complete `submission_24914408.zip` for LMS.
 
 ## Design summary

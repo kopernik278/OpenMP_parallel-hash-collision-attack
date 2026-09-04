@@ -1,5 +1,5 @@
 % CITS3402/CITS5507 Assignment 1: Parallel Hash Collision Attack
-% [Your Name], 24914408
+% Shaoming Wu, 24914408
 % Semester 2, 2026
 
 ## Birthday-attack algorithm and collision-detection data structure
