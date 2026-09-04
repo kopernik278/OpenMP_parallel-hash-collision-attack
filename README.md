@@ -14,7 +14,7 @@ src/
   birthday_attack.c/.h   shared birthday-attack search engine
   serial_main.c          single-threaded CLI (task 2)
   parallel_main.c        OpenMP CLI (task 3)
-  config.h               STUDENT_ID placeholder — edit before building
+  config.h               STUDENT_ID (24914408)
 scripts/
   solve_all.slurm         solves all six pairs on one Kaya node (96 cores)
   scaling_job.slurm        thread-count scaling benchmark on Kaya
@@ -35,9 +35,10 @@ compiler module first (e.g. `module load gcc`) so `cc`/`gcc` supports
 `-fopenmp`. On macOS, `make` auto-detects Homebrew's `libomp`
 (`brew install libomp` if you don't already have it).
 
-**Before building, edit `src/config.h`** and put your real 8-digit student
-number in `STUDENT_ID` — every solved PDF and hash search uses this value,
-per the assignment's header specification.
+`src/config.h` already contains the real student number (`24914408`) used
+in every solved PDF and hash search, per the assignment's header
+specification. If you fork this for a different submission, edit
+`STUDENT_ID` there before building.
 
 ## Running
 
@@ -97,7 +98,7 @@ You should do this yourself from a Kaya login node; the steps are:
    cd OpenMP_parallel-hash-collision-attack
    ```
 
-3. **Edit `src/config.h`** and set your real student number (`STUDENT_ID`).
+3. **Check `src/config.h`** — `STUDENT_ID` is already set to `24914408`.
 
 4. **Check available compiler modules** (name may vary by cluster image):
    ```
@@ -146,6 +147,34 @@ You should do this yourself from a Kaya login node; the steps are:
 
 10. Verify every solved pair one more time with `check_toy_hash.py` before
     zipping up the LMS submission.
+
+## Submission checklist
+
+`scripts/package_submission.sh` builds `submission_24914408.zip` containing
+everything the assignment's Submission section requires: `src/`,
+`Makefile`, the two Slurm scripts, `README.md`, `report/report.pdf`, and
+`solved/` (the solved pairs). Run it any time from the repo root:
+
+```
+bash scripts/package_submission.sh
+```
+
+It warns (but still packages) if any of the six solved pairs are missing.
+As of this repo's last commit, `solved/` contains `example`, `1_kilo`, and
+`2_mega` (all verified against `check_toy_hash.py`), solved on a local
+10-core machine — `3_giga`, `4_tera`, `5_peta`, and `6_exa` still need to be
+produced **by you, on Kaya**, following the "Running on Kaya" steps above.
+After `scripts/solve_all.slurm` finishes and you `scp` `solved/` back:
+
+1. Copy the four missing pairs (and optionally re-solved `1_kilo`/`2_mega`
+   for genuine Kaya timings) into this repo's `solved/` directory.
+2. Fill the placeholder table in `report/report.md` with the real
+   `results/scaling_<jobid>.csv` numbers, then re-render:
+   `pandoc report/report.md -o report/report.pdf`.
+3. Fill in your full name at the top of `report/report.md` (currently a
+   `[Your Name]` placeholder — only the student number is filled in).
+4. Re-run `bash scripts/package_submission.sh` to produce the final,
+   complete `submission_24914408.zip` for LMS.
 
 ## Design summary
 
