@@ -108,19 +108,26 @@ You should do this yourself from a Kaya login node; the steps are:
    Adjust the `module load gcc` line in `scripts/solve_all.slurm` and
    `scripts/scaling_job.slurm` to match whatever module Kaya offers.
 
-5. **Submit the job to solve all six pairs** (one node, 96 cores, ≤15 min per
-   pair, 2-hour overall budget):
+5. **Confirm the partition** with `sinfo`. Both Slurm scripts already use
+   `--partition=cits3402` (the CPU partition, 2-hour time limit) — do
+   **not** use `cits3402-gpu`, which caps jobs at 15 minutes and is for
+   GPU work, not this assignment. If `sinfo` shows all `cits3402` nodes as
+   `alloc`/`mix`, your job will simply queue until one frees up; check
+   with `squeue -u $USER` (below).
+
+6. **Submit the job to solve all six pairs** (one node, 96 cores, ≤15 min
+   per pair, ~2-hour overall budget):
    ```
    mkdir -p logs solved
    sbatch scripts/solve_all.slurm
    ```
 
-6. **Check the queue / job status**:
+7. **Check the queue / job status**:
    ```
    squeue -u $USER
    ```
 
-7. **Once it finishes**, inspect the output and error logs:
+8. **Once it finishes**, inspect the output and error logs:
    ```
    cat logs/birthday-solve_<jobid>.out
    cat logs/birthday-solve_<jobid>.err
@@ -128,8 +135,11 @@ You should do this yourself from a Kaya login node; the steps are:
    Confirm every pair printed `collision found` and that `search_seconds`
    for each pair is comfortably under 900 seconds (15 minutes).
 
-8. **Run the thread-scaling benchmark** for the report (varies thread count
-   1…96 across all six pairs, three repeats each, ~10 minutes total):
+9. **Run the thread-scaling benchmark** for the report (varies thread count
+   1…96 across all six pairs, three repeats each, ~10 minutes total). This
+   can be `sbatch`'d right after (or even before) `solve_all.slurm` — both
+   scripts only run a plain `make`, so submitting them back to back is
+   safe:
    ```
    sbatch scripts/scaling_job.slurm
    ```
@@ -138,14 +148,14 @@ You should do this yourself from a Kaya login node; the steps are:
    fill in the performance section of `report/report.md`, then re-render
    `report/report.pdf` (e.g. `pandoc report/report.md -o report/report.pdf`).
 
-9. **Copy the solved PDFs and results back** to your own machine for
-   submission:
-   ```
-   scp -r <username>@kaya.hpc.uwa.edu.au:~/OpenMP_parallel-hash-collision-attack/solved .
-   scp -r <username>@kaya.hpc.uwa.edu.au:~/OpenMP_parallel-hash-collision-attack/results .
-   ```
+10. **Copy the solved PDFs and results back** to your own machine for
+    submission:
+    ```
+    scp -r <username>@kaya.hpc.uwa.edu.au:~/OpenMP_parallel-hash-collision-attack/solved .
+    scp -r <username>@kaya.hpc.uwa.edu.au:~/OpenMP_parallel-hash-collision-attack/results .
+    ```
 
-10. Verify every solved pair one more time with `check_toy_hash.py` before
+11. Verify every solved pair one more time with `check_toy_hash.py` before
     zipping up the LMS submission.
 
 ## Submission checklist

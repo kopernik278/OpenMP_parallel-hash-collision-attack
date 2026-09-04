@@ -1,6 +1,6 @@
 #!/bin/bash --login
 #SBATCH --job-name=birthday-scaling
-#SBATCH --partition=work
+#SBATCH --partition=cits3402
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=96
