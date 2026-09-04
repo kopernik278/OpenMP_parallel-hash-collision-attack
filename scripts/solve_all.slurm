@@ -13,7 +13,6 @@ module load gcc
 cd "$SLURM_SUBMIT_DIR"
 mkdir -p solved logs
 
-make clean
 make
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK

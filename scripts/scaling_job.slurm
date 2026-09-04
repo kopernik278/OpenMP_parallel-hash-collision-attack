@@ -13,7 +13,6 @@ module load gcc
 cd "$SLURM_SUBMIT_DIR"
 mkdir -p logs results
 
-make clean
 make
 
 export OMP_PROC_BIND=close
