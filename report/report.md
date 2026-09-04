@@ -7,11 +7,10 @@
 `toy_hash` produces a 48-bit output, so by the birthday bound a matching
 pair between two independent families of nonce trials is expected after
 roughly `sqrt(pi/2 * 2^48) ~ 1.25 * 2^24 ~ 2.1e7` combined trials — far
-fewer than the 2^48 a preimage search would need. The program exploits this
-directly: rather than fixing one file's nonce and searching only the other
-(a much larger expected search), it grows two pools of trials in parallel,
-one per file, and stops as soon as any trial's hash already exists in the
-*other* file's pool.
+fewer than the 2^48 a preimage search would need. Rather than fixing one
+file's nonce and searching only the other, the program grows two pools of
+trials in parallel, one per file, and stops as soon as any trial's hash
+already exists in the *other* file's pool.
 
 Both pools live in a single shared open-addressing hash table keyed by the
 48-bit hash value. Each slot stores the hash, the nonce that produced it,
@@ -93,21 +92,23 @@ near-linear early scaling:
 | 8 |  3.78 | 5.69x |
 | 10 |  3.42 | 6.29x |
 
-Both runs found the same ~10.39M trials on each side (~20.8M combined),
-matching the birthday-bound estimate above almost exactly. Efficiency
-drops from 100% at 2 threads to ~63% at 10 threads; the search is a
-memory-bandwidth-bound workload (every insert/probe is an effectively
-random access into a multi-gigabyte table), so once all cores are active
-they contend for shared cache and DRAM bandwidth rather than for compute,
-which is the expected shape of the curve and is expected to continue on
-Kaya's higher core counts. The 64 KB `1_kilo` pair was solved end-to-end at
-10 threads in 182.7 s (10.12M trials/side), consistent with per-trial cost
-scaling with file size while the *number* of trials needed stays roughly
-constant across pairs — this is exactly why the harder, larger pairs need
-Kaya's full 96-core node rather than more trials.
+Both runs found ~10.39M trials on each side (~20.8M combined), matching the
+birthday-bound estimate almost exactly. Efficiency drops from 100% at 2
+threads to ~63% at 10 threads: the search is memory-bandwidth-bound (every
+insert/probe is an effectively random access into a multi-gigabyte table),
+so once all cores are active they contend for shared cache and DRAM
+bandwidth rather than compute — a trend expected to continue on Kaya's
+higher core counts. Solving full pairs end-to-end at 10 threads confirms
+trial count stays roughly constant across file sizes while wall-clock time
+scales with them: the 64 KB `1_kilo` pair took 182.7 s (10.12M
+trials/side), the 128 KB `2_mega` pair took 314.5 s (8.96M trials/side) —
+1.7x slower for 2x the size, since larger files cost more per hash but
+need a similar trial count. This is why the harder, larger pairs need
+Kaya's full 96-core node rather than more trials: `3_giga`–`6_exa`
+extrapolate to tens of minutes at 10 threads, comfortably inside the 900 s
+budget only once ~96 cores are available.
 
 *[Kaya results to insert here after running `scripts/scaling_job.slurm` and
-`scripts/solve_all.slurm`: a table of `search_seconds` for all six pairs
-(`1_kilo` … `6_exa`) across thread counts 1–96, confirming every pair
-solves within the 900-second budget, plus the resulting speedup and
-parallel-efficiency curves per pair.]*
+`scripts/solve_all.slurm`: `search_seconds` for all six pairs across thread
+counts 1–96, confirming every pair solves within budget, with the
+resulting speedup/efficiency curves.]*
