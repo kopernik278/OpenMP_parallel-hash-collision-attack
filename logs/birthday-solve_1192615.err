@@ -1,0 +1,138 @@
+	Command being timed: "./bin/birthday_parallel 1_kilo_a.pdf 1_kilo_b.pdf solved/1_kilo_a.pdf solved/1_kilo_b.pdf 96"
+	User time (seconds): 3267.11
+	System time (seconds): 0.99
+	Percent of CPU this job got: 9500%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:34.40
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4721100
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 19869
+	Voluntary context switches: 1615
+	Involuntary context switches: 10824
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+	Command being timed: "./bin/birthday_parallel 2_mega_a.pdf 2_mega_b.pdf solved/2_mega_a.pdf solved/2_mega_b.pdf 96"
+	User time (seconds): 2930.66
+	System time (seconds): 1.01
+	Percent of CPU this job got: 9490%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:30.89
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4725476
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 28393
+	Voluntary context switches: 1246
+	Involuntary context switches: 10233
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+	Command being timed: "./bin/birthday_parallel 3_giga_a.pdf 3_giga_b.pdf solved/3_giga_a.pdf solved/3_giga_b.pdf 96"
+	User time (seconds): 5996.26
+	System time (seconds): 1.18
+	Percent of CPU this job got: 9505%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:03.09
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4735736
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 42994
+	Voluntary context switches: 1590
+	Involuntary context switches: 26175
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+	Command being timed: "./bin/birthday_parallel 4_tera_a.pdf 4_tera_b.pdf solved/4_tera_a.pdf solved/4_tera_b.pdf 96"
+	User time (seconds): 7117.53
+	System time (seconds): 1.25
+	Percent of CPU this job got: 9521%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:14.76
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4748108
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 54550
+	Voluntary context switches: 1213
+	Involuntary context switches: 25473
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+	Command being timed: "./bin/birthday_parallel 5_peta_a.pdf 5_peta_b.pdf solved/5_peta_a.pdf solved/5_peta_b.pdf 96"
+	User time (seconds): 17134.02
+	System time (seconds): 1.50
+	Percent of CPU this job got: 9547%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:59.47
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4765576
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 77215
+	Voluntary context switches: 1150
+	Involuntary context switches: 47302
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+	Command being timed: "./bin/birthday_parallel 6_exa_a.pdf 6_exa_b.pdf solved/6_exa_a.pdf solved/6_exa_b.pdf 96"
+	User time (seconds): 66302.54
+	System time (seconds): 3.05
+	Percent of CPU this job got: 9556%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 11:33.80
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4803316
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 249855
+	Voluntary context switches: 1272
+	Involuntary context switches: 180328
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

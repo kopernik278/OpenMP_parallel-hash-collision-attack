@@ -1,0 +1,55 @@
+make: Nothing to be done for 'all'.
+=== 1_kilo : 96 threads ===
+collision found
+nonce_a=000000000071238d
+nonce_b=0000000001820e70
+hash=1a0d673fe6ff
+trials_a=25300230
+trials_b=25300640
+threads=96
+search_seconds=34.178995
+=== 2_mega : 96 threads ===
+collision found
+nonce_a=0000000000ae1882
+nonce_b=000000000002a3ae
+hash=4843f11270c9
+trials_a=11409586
+trials_b=11409993
+threads=96
+search_seconds=30.663832
+=== 3_giga : 96 threads ===
+collision found
+nonce_a=0000000000cbec6e
+nonce_b=00000000008cfaac
+hash=04087af642a2
+trials_a=13364382
+trials_b=13358474
+threads=96
+search_seconds=62.821858
+=== 4_tera : 96 threads ===
+collision found
+nonce_a=0000000000a17585
+nonce_b=00000000000a92f7
+hash=337e7f679a81
+trials_a=10581429
+trials_b=10581546
+threads=96
+search_seconds=74.448546
+=== 5_peta : 96 threads ===
+collision found
+nonce_a=0000000000dfe722
+nonce_b=00000000011036c0
+hash=00050d015182
+trials_a=17839044
+trials_b=17839856
+threads=96
+search_seconds=179.191098
+=== 6_exa : 96 threads ===
+collision found
+nonce_a=00000000004cc47a
+nonce_b=000000000232118e
+hash=3dc27861bf3b
+trials_a=36834375
+trials_b=36835774
+threads=96
+search_seconds=693.550341
