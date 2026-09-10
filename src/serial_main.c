@@ -27,6 +27,11 @@ int main(int argc, char **argv)
 
     if (!r.found) {
         fprintf(stderr, "no collision found within %llu trials per side\n", (unsigned long long)max_trials);
+        printf("collision_found=0\n");
+        printf("trials_a=%llu\n", (unsigned long long)r.trials_a);
+        printf("trials_b=%llu\n", (unsigned long long)r.trials_b);
+        printf("threads=1\n");
+        printf("search_seconds=%.6f\n", r.seconds);
         return 2;
     }
 
@@ -53,6 +58,7 @@ int main(int argc, char **argv)
     pdf_write(out_b, solved_b, b.size);
 
     printf("collision found\n");
+    printf("collision_found=1\n");
     printf("nonce_a=%016llx\n", (unsigned long long)r.nonce_a);
     printf("nonce_b=%016llx\n", (unsigned long long)r.nonce_b);
     printf("hash=%012llx\n", (unsigned long long)hash_a);
