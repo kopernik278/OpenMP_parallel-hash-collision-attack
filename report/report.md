@@ -5,12 +5,11 @@
 ## Birthday-attack algorithm and collision-detection data structure
 
 `toy_hash` produces a 48-bit output, so by the birthday bound a matching
-pair between two independent families of nonce trials is expected after
+pair between two independent nonce-trial families is expected after
 roughly `sqrt(pi/2 * 2^48) ~ 2.1e7` combined trials — far fewer than 2^48
 for a preimage search. Rather than fixing one file's nonce and searching
-only the other, the program grows two trial pools in parallel, one per
-file, stopping once a trial's hash already exists in the *other* file's
-pool.
+only the other, the program grows two trial pools in parallel, stopping
+once a trial's hash already exists in the *other* file's pool.
 
 Both pools live in one shared open-addressing hash table keyed by the
 48-bit hash. Each slot stores the hash, the nonce that produced it, which
@@ -19,62 +18,59 @@ Fibonacci multiplier, masks it to the table size to pick a home slot, then
 linear probes to the first free or matching slot. A match owned by the
 *other* file is a genuine collision; one owned by the *same* file is a
 redundant self-collision, discarded. Capacity is four times the trial
-budget (`4 * 2^26` slots by default) so load factor stays at or below 0.5
-and probe chains stay short. Nonces are generated sequentially via an
-atomic counter per file rather than randomly — `toy_hash`'s
-MurmurHash3-style finalising mix already scatters sequential inputs
-uniformly, giving the same statistics as random sampling while wasting no
-nonce on a repeat.
+budget (`4 * 2^26` slots) so load factor stays at or below 0.5 and probe
+chains stay short. Nonces are generated sequentially via an atomic counter
+per file rather than randomly — `toy_hash`'s MurmurHash3-style finalising
+mix already scatters sequential inputs uniformly, so this behaves like
+random sampling while wasting no nonce on a repeat.
 
 ## Parallelisation and synchronisation with OpenMP
 
 Threads split evenly into an "A-group" and a "B-group" (even/odd thread
-id) inside one `#pragma omp parallel` region; each hashes trials only for
-its file, drawing the next nonce with `atomic_fetch_add` on a per-file
-counter — no two threads ever hash the same nonce, and none blocks.
+id) in one `#pragma omp parallel` region; each hashes trials only for its
+file, drawing the next nonce with `atomic_fetch_add` on a per-file counter
+— no two threads ever hash the same nonce, and none blocks.
 
 The shared hash table is the only structure threads communicate through,
 made safe without any `critical` section or `omp_lock_t`. Each slot's hash
 field is a C11 `_Atomic uint64_t` written only via
 `atomic_compare_exchange_strong` from `TABLE_EMPTY` to the trial's hash;
-exactly one thread can win that CAS for a given slot, so that slot's
+exactly one thread can win that CAS per slot, so that slot's
 `nonce`/`owner` fields are subsequently written by that thread alone — no
 two threads ever write the same memory. The remaining hazard is a reader
-observing a slot as claimed before the winner finishes writing
-`nonce`/`owner`; this is closed with a "published" flag — the winner
-writes `nonce`/`owner`, then stores `ready = 1` with
-`memory_order_release`, and a reader spins on `ready` with
-`memory_order_acquire` first, so it never observes a torn write. That spin
-window is only the few instructions between the CAS succeeding and the
-stores after it, so it costs nothing in practice. A second atomic
-(`found_flag`) is claimed with one final CAS so only the first thread to
-find a collision records the winning pair; every other thread observes the
-shared `stop_flag` and exits. Before writing any file, the program
-independently recomputes `toy_hash` on the final bytes and aborts if they
-disagree, so a concurrency bug can never silently produce an invalid
-submission.
+observing a slot as claimed before the winner finishes writing those
+fields; this is closed with a "published" flag — the winner writes
+`nonce`/`owner`, then stores `ready = 1` with `memory_order_release`, and
+a reader spins on `ready` with `memory_order_acquire` first, so it never
+observes a torn write. That spin window is only the few instructions
+between the CAS succeeding and the stores after it, so it costs nothing
+in practice. A second atomic (`found_flag`) is claimed with one final CAS
+so only the first thread to find a collision records the winning pair;
+every other thread observes the shared `stop_flag` and exits. Before
+writing any file, the program recomputes `toy_hash` on the final bytes
+and aborts on disagreement, so a concurrency bug can never silently
+produce an invalid submission.
 
 ## Memory requirements and trade-offs
 
 The dominant cost is the collision table: at the default
 2^26-trials-per-side budget, capacity is 2^28 slots, each holding an
 8-byte hash, 8-byte nonce, and two 1-byte tags — about 4.3 GB. This beats
-a smaller, higher-load-factor table because linear probing degrades
-sharply as load factor approaches 1, and Kaya nodes have far more memory
-than this needs, so speed wins over economy. A second, much smaller cost
-is per-thread: each thread keeps one private, mutable copy of whichever
-file(s) it hashes (loaded once, header patched every trial), so only the
-16-byte nonce is rewritten per trial rather than re-copying the whole file
-— for the largest (~900 KB) pair at 96 threads this is under 90 MB,
-negligible next to the table.
+a smaller, higher-load-factor table since linear probing degrades sharply
+near load factor 1, and Kaya has far more memory than this needs, so
+speed wins over economy. A smaller cost is per-thread: each thread keeps
+one private, mutable copy of whichever file(s) it hashes (loaded once,
+header patched every trial), so only the 16-byte nonce is rewritten per
+trial rather than re-copying the whole file — for the largest (~900 KB)
+pair at 96 threads this is under 90 MB, negligible beside the table.
 
 ## Performance metrics and analysis
 
 `scripts/scaling_job.slurm` measured `search_seconds` on Kaya (`cits3402`
-partition, one 96-core node) across all six pairs and thread counts 1–96,
-three repeats each, with a fixed per-pair trial budget (~8 s of
-single-thread work) that isolates raw throughput from the attack's own
-luck. Scaling is close to linear even for the hardest pair:
+partition, 96-core node) across all six pairs and thread counts 1–96,
+three repeats each, with a fixed per-pair trial budget (~8 s at 1 thread)
+isolating raw throughput from the attack's own luck. Scaling is close to
+linear even for the hardest pair:
 
 | threads | search_seconds (`6_exa`) | speedup |
 |---:|---:|---:|
@@ -90,18 +86,27 @@ luck. Scaling is close to linear even for the hardest pair:
 That is 95% parallel efficiency at 96 threads. Every other pair scales
 just as well — 88.3% (`3_giga`) to 95.2% (`6_exa`) — and slightly
 *improves* with file size, since a larger per-hash cost leaves threads
-relatively less time touching the shared table (the one serialisation
-point). This far exceeds a 10-core laptop, where efficiency fell to ~63%
-by 10 threads: Kaya's server-class memory subsystem sustains many more
-concurrent random accesses into the table before threads contend for
-bandwidth.
+relatively less time touching the shared table, the one serialisation
+point. This far exceeds a 10-core laptop's ~63% efficiency ceiling at 10
+threads: Kaya's server-class memory subsystem sustains many more
+concurrent accesses into the table before threads contend for bandwidth.
 
-Full end-to-end solves (student ID `24914408`, verified against
-`check_toy_hash.py`) confirm correctness, not just throughput: on the
-10-core laptop, `1_kilo` took 999.97 s (25.32M trials/side) and the larger
-`2_mega` only 747.5 s (11.41M trials/side) — trial count is a random
-variable around the ~2.1e7-combined mean, not a function of file size
-alone, so wall-clock time must be measured per pair. At Kaya's measured
-96-thread throughput, every pair — including `6_exa` — comfortably fits
-the 900 s budget even on an above-average-trial-count run, which is why
-harder pairs need the full node rather than fewer threads.
+Full end-to-end solves on Kaya (96 threads, ID `24914408`, all verified
+against `check_toy_hash.py`) confirm every pair completes well inside the
+900 s budget:
+
+| pair | search_seconds | trials/side | % of budget |
+|---|---:|---:|---:|
+| 1_kilo | 34.18 | 25.30M | 3.8% |
+| 2_mega | 30.66 | 11.41M | 3.4% |
+| 3_giga | 62.82 | 13.36M | 7.0% |
+| 4_tera | 74.45 | 10.58M | 8.3% |
+| 5_peta | 179.19 | 17.84M | 19.9% |
+| 6_exa | 693.55 | 36.83M | 77.1% |
+
+Trial count is a random variable around the ~2.1e7-combined birthday-bound
+mean, not a function of file size — `2_mega` needed under half the trials
+of `1_kilo` despite twice the per-hash cost — so wall-clock time must be
+measured per pair. `6_exa` is tightest at 77% of budget: its per-hash cost
+is roughly 14x `1_kilo`'s for a comparable trial count, exactly why harder
+pairs need the full 96-core node rather than fewer threads.
