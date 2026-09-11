@@ -4,6 +4,8 @@ CITS3402/CITS5507 Assignment 1 — a birthday-attack collision finder for the
 intentionally weak 48-bit `toy_hash` function, with a single-threaded
 baseline and an OpenMP-parallel implementation.
 
+**Author:** Shaoming Wu, 24914408
+
 ## Layout
 
 ```
