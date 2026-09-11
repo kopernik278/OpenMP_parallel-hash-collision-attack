@@ -10,7 +10,7 @@ baseline and an OpenMP-parallel implementation.
 
 ```
 src/
-  toy_hash.c/.h         reference hash implementation (unmodified)
+  toy_hash.c/.h         reference hash implementation
   pdf_io.c/.h            load/write PDFs, set nonce & student id fields
   hashtable.c/.h         lock-free open-addressing collision table
   birthday_attack.c/.h   shared birthday-attack search engine
@@ -23,7 +23,7 @@ scripts/
 report/
   report.md / report.pdf  1000-word report
 *_a.pdf / *_b.pdf          the six provided file pairs, plus example_*.pdf
-solved/                    output directory for solved pairs (created at runtime)
+solved/                    output directory for solved pairs
 ```
 
 ## Building
@@ -34,13 +34,8 @@ make
 
 Produces `bin/birthday_serial` and `bin/birthday_parallel`. On Kaya, load a
 compiler module first (e.g. `module load gcc`) so `cc`/`gcc` supports
-`-fopenmp`. On macOS, `make` auto-detects Homebrew's `libomp`
-(`brew install libomp` if you don't already have it).
+`-fopenmp`. On macOS, `brew install libomp` if you don't already have it.
 
-`src/config.h` already contains the real student number (`24914408`) used
-in every solved PDF and hash search, per the assignment's header
-specification. If you fork this for a different submission, edit
-`STUDENT_ID` there before building.
 
 ## Running
 
@@ -51,7 +46,7 @@ specification. If you fork this for a different submission, edit
 
 - `threads` defaults to the number of cores OpenMP reports available.
 - `max_trials_per_side` defaults to 2^26 (~67 million), sized so a genuine
-  collision is found with overwhelming probability (see report) — increase
+  collision is found with overwhelming probability — increase
   it if a run reports "no collision found".
 - Both binaries print the winning nonces, the matching 48-bit hash, trial
   counts, thread count, and `search_seconds` — the search-only wall-clock
@@ -81,18 +76,14 @@ for pair in 1_kilo 2_mega 3_giga 4_tera 5_peta 6_exa; do
 done
 ```
 
-or, on Kaya, submit `scripts/solve_all.slurm` (see below).
+or, on Kaya, submit `scripts/solve_all.slurm` .
 
 ## Running on Kaya
 
-You should do this yourself from a Kaya login node; the steps are:
+You should do this from a Kaya login node; the steps are:
 
-1. **Copy the project to Kaya** (from your own machine, not this sandbox):
-   ```
-   git clone git@github.com:kopernik278/OpenMP_parallel-hash-collision-attack.git
-   scp -r OpenMP_parallel-hash-collision-attack <username>@kaya.hpc.uwa.edu.au:~/
-   ```
-   or `git clone` directly on Kaya if it has outbound network access.
+1. **Copy the project to Kaya** :
+   `git clone` directly on Kaya if it has outbound network access.
 
 2. **Log in**:
    ```
@@ -100,9 +91,7 @@ You should do this yourself from a Kaya login node; the steps are:
    cd OpenMP_parallel-hash-collision-attack
    ```
 
-3. **Check `src/config.h`** — `STUDENT_ID` is already set to `24914408`.
-
-4. **Check available compiler modules** (name may vary by cluster image):
+3. **Check available compiler modules** :
    ```
    module avail gcc
    module load gcc
@@ -110,26 +99,22 @@ You should do this yourself from a Kaya login node; the steps are:
    Adjust the `module load gcc` line in `scripts/solve_all.slurm` and
    `scripts/scaling_job.slurm` to match whatever module Kaya offers.
 
-5. **Confirm the partition** with `sinfo`. Both Slurm scripts already use
-   `--partition=cits3402` (the CPU partition, 2-hour time limit) — do
-   **not** use `cits3402-gpu`, which caps jobs at 15 minutes and is for
-   GPU work, not this assignment. If `sinfo` shows all `cits3402` nodes as
-   `alloc`/`mix`, your job will simply queue until one frees up; check
-   with `squeue -u $USER` (below).
+4. **Confirm the partition** with `sinfo`. Both Slurm scripts already use
+   `--partition=cits3402`.
 
-6. **Submit the job to solve all six pairs** (one node, 96 cores, ≤15 min
+5. **Submit the job to solve all six pairs** (one node, 96 cores, ≤15 min
    per pair, ~2-hour overall budget):
    ```
    mkdir -p logs solved
    sbatch scripts/solve_all.slurm
    ```
 
-7. **Check the queue / job status**:
+6. **Check the queue / job status**:
    ```
    squeue -u $USER
    ```
 
-8. **Once it finishes**, inspect the output and error logs:
+7. **Once it finishes**, inspect the output and error logs:
    ```
    cat logs/birthday-solve_<jobid>.out
    cat logs/birthday-solve_<jobid>.err
@@ -137,7 +122,7 @@ You should do this yourself from a Kaya login node; the steps are:
    Confirm every pair printed `collision found` and that `search_seconds`
    for each pair is comfortably under 900 seconds (15 minutes).
 
-9. **Run the thread-scaling benchmark** for the report (varies thread count
+8. **Run the thread-scaling benchmark**  (varies thread count
    1…96 across all six pairs, three repeats each, ~10 minutes total). This
    can be `sbatch`'d right after (or even before) `solve_all.slurm` — both
    scripts only run a plain `make`, so submitting them back to back is
@@ -146,45 +131,9 @@ You should do this yourself from a Kaya login node; the steps are:
    sbatch scripts/scaling_job.slurm
    ```
    This writes `results/scaling_<jobid>.csv` with columns
-   `pair,threads,repeat,search_seconds,trials_a,trials_b`. Use this CSV to
-   fill in the performance section of `report/report.md`, then re-render
-   `report/report.pdf` (e.g. `pandoc report/report.md -o report/report.pdf`).
+   `pair,threads,repeat,search_seconds,trials_a,trials_b`.
 
-10. **Copy the solved PDFs and results back** to your own machine for
-    submission:
-    ```
-    scp -r <username>@kaya.hpc.uwa.edu.au:~/OpenMP_parallel-hash-collision-attack/solved .
-    scp -r <username>@kaya.hpc.uwa.edu.au:~/OpenMP_parallel-hash-collision-attack/results .
-    ```
 
-11. Verify every solved pair one more time with `check_toy_hash.py` before
-    zipping up the LMS submission.
-
-## Submission checklist
-
-`scripts/package_submission.sh` builds `submission_24914408.zip` containing
-everything the assignment's Submission section requires: `src/`,
-`Makefile`, the two Slurm scripts, `README.md`, `report/report.pdf`, and
-`solved/` (the solved pairs). Run it any time from the repo root:
-
-```
-bash scripts/package_submission.sh
-```
-
-It warns (but still packages) if any of the six solved pairs are missing.
-As of this repo's last commit, `solved/` contains `example`, `1_kilo`, and
-`2_mega` (all verified against `check_toy_hash.py`), solved on a local
-10-core machine — `3_giga`, `4_tera`, `5_peta`, and `6_exa` still need to be
-produced **by you, on Kaya**, following the "Running on Kaya" steps above.
-After `scripts/solve_all.slurm` finishes and you `scp` `solved/` back:
-
-1. Copy the four missing pairs (and optionally re-solved `1_kilo`/`2_mega`
-   for genuine Kaya timings) into this repo's `solved/` directory.
-2. Fill the placeholder table in `report/report.md` with the real
-   `results/scaling_<jobid>.csv` numbers, then re-render:
-   `pandoc report/report.md -o report/report.pdf`.
-3. Re-run `bash scripts/package_submission.sh` to produce the final,
-   complete `submission_24914408.zip` for LMS.
 
 ## Design summary
 

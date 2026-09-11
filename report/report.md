@@ -87,11 +87,9 @@ That is 95% parallel efficiency at 96 threads. Every other pair scales
 just as well — 88.3% (`3_giga`) to 95.2% (`6_exa`) — and slightly
 *improves* with file size, since a larger per-hash cost leaves threads
 relatively less time touching the shared table, the one serialisation
-point. This far exceeds a 10-core laptop's ~63% efficiency ceiling at 10
-threads: Kaya's server-class memory subsystem sustains many more
-concurrent accesses into the table before threads contend for bandwidth.
+point.
 
-Full end-to-end solves on Kaya (96 threads, ID `24914408`, all verified
+Full end-to-end solves on Kaya (96 threads, all verified
 against `check_toy_hash.py`) confirm every pair completes well inside the
 900 s budget:
 
